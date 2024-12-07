@@ -1,7 +1,7 @@
 import pandas
 
 list_of_reports = pandas.read_csv("data.txt", header=None, names=["RawData"])
-df = list_of_reports["RawData"].str.split(r'\s+', expand=True)  # Use regex for splitting
+df = list_of_reports["RawData"].str.split(r'\s+', expand=True)
 list_of_reports = df.values.tolist()
 
 list_of_reports = [[int(each_value) for each_value in row if each_value not in (None, '')] for row in list_of_reports]
@@ -22,9 +22,6 @@ for row in list_of_reports:
             ascension_counter +=1
     values_quantity_ascending = len(row)-1
     values_quantity_descending = -len(row)+1
-
-    print(row)
-    print(f"Ascension Counter: {ascension_counter}, Values Quantity: {values_quantity_ascending}, {values_quantity_descending}")  # Debug counters
 
     if (values_quantity_descending) == ascension_counter or values_quantity_ascending== ascension_counter:
         print("1st check passed")
