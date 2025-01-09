@@ -1,42 +1,36 @@
-import pandas
+import pandas as pd
 
-list_of_reports = pandas.read_csv("data.txt", header=None, names=["RawData"])
-df = list_of_reports["RawData"].str.split(r'\s+', expand=True)
-list_of_reports = df.values.tolist()
+list_of_reports = pd.read_csv("data.txt", header=None, names=["Report"])
+list_of_reports["Report"] = list_of_reports["Report"].apply(lambda x: list(map(int, x.split())))
+reports_list = list_of_reports["Report"].tolist()
 
-list_of_reports = [[int(each_value) for each_value in row if each_value not in (None, '')] for row in list_of_reports]
-safe_reports_counter = 0
+reports_counter = 0
 
-for row in list_of_reports:
+for report in reports_list:
+    report_verification_list_1 = []
 
-    verification_list = []
-    ascension_counter = 0
+    for level in range(len(report)-1):
+        if report[level] > report[level+1]:
+            report_verification_list_1.append("descending")
+        elif report[level] < report[level+1]:
+            report_verification_list_1.append("ascending")
+        else:
+            report_verification_list_1.append("no change")
 
-    for each_value in range(len(row)-1):
-        value_A = row[each_value]
-        value_B = row[each_value +1]
+    report_verification_list_2 = []
+    for level in range(len(report)-1):
+        value_change = report[level] - report[level+1]
+        report_verification_list_2.append(value_change)
 
-        if value_A > value_B:
-            ascension_counter -=1
-        elif value_A < value_B:
-            ascension_counter +=1
-    values_quantity_ascending = len(row)-1
-    values_quantity_descending = -len(row)+1
+    print(report_verification_list_1)
+    print(report_verification_list_2)
 
-    if (values_quantity_descending) == ascension_counter or values_quantity_ascending== ascension_counter:
+    if all(each_value == "descending" for each_value in report_verification_list_1) or all(each_value == "ascending" for each_value in report_verification_list_1):
         print("1st check passed")
-        for each_value in range(len(row) - 2):
-            value_A = row[each_value]
-            value_B = row[each_value + 1]
-            value_C = row[each_value+2]
-
-            calculated_range_left = abs(value_A - value_B)
-            calculated_range_right = abs(value_B - value_C)
-            verification_list.append(calculated_range_left)
-            verification_list.append(calculated_range_right)
-
-        if all(-2 <= x <= 3 for x in verification_list):
+        if max(report_verification_list_2)<=3 and min(report_verification_list_2)>=-3:
+            reports_counter+=1
             print("2nd check passed")
-            safe_reports_counter +=1
+    else:
+        print("1st check failed")
 
-    print(safe_reports_counter)
+    print(reports_counter)
